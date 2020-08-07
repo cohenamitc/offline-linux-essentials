@@ -1,49 +1,66 @@
 import os
-from os import walk, listdir
+from os import listdir
 from os.path import isfile, join
 import re
 import sys
 
-if len(sys.argv) < 2:
-    print(f'Usage: {os.path.basename(__file__)}  source_dir  [destination_dir]')
-    exit(1)
-package_name_pattern = "^(.+)-\d+"
-workdir = sys.argv[1]
-destdir = sys.argv[2] if len(sys.argv) >= 3 else workdir
 
-if not os.path.exists(workdir):
-    print(f'Error: {workdir} does not exists')
-    exit(1)
+PACKAGE_NAME_PATTERN = "^(.+)-\d+"
+WORKDIR = ''
+DESTDIR = ''
 
-if not os.path.exists(destdir):
-    res = input(f'Notice: {destdir} does not exists, create it [y/N]? ')
-    if str(res).lower() != 'y':
-        exit(1)
-    else:
-        os.mkdir(destdir)
-        print(f'Created dir {destdir}')
-        print('=' * 15)
 
 def get_package_name(package):
-    p = re.compile(package_name_pattern)
+    p = re.compile(PACKAGE_NAME_PATTERN)
     name = p.match(package)
     if name:
         return name.group(1)
     return None
-count = 0
-onlyfiles = [f for f in listdir(workdir) if isfile(join(workdir, f))]
-for f in onlyfiles:
-    pkg_name = get_package_name(f)
-    if pkg_name:
-        pkg_source = join(workdir, f)
-        pkg_path = join(destdir, pkg_name)
-        if not os.path.exists(pkg_path):
-            os.mkdir(pkg_path)
-            print(f'Created {pkg_path}')
-        os.system(f'mv -f {pkg_source} {pkg_path}')
-        print(f'Moved file {f} to {pkg_path}')
-        print('=' * 15)
-        count += 1
-print(f'Done! {count} files sorted in {destdir}')
 
-        
+
+def pre_check():
+    global WORKDIR
+    global DESTDIR
+    if len(sys.argv) < 2:
+        print(f'Usage: {os.path.basename(__file__)}  source_dir  [destination_dir]')
+        exit(1)
+    WORKDIR = sys.argv[1]
+    DESTDIR = sys.argv[2] if len(sys.argv) >= 3 else WORKDIR
+    if not os.path.exists(WORKDIR):
+        print(f'Error: {WORKDIR} does not exists')
+        exit(1)
+    if not os.path.exists(DESTDIR):
+        res = input(f'Notice: {DESTDIR} does not exists, create it [y/N]? ')
+        if str(res).lower() != 'y':
+            exit(1)
+        else:
+            os.mkdir(DESTDIR)
+            print(f'Created dir {DESTDIR}')
+            print('=' * 15)
+
+
+def move_files():
+    count = 0
+    onlyfiles = [f for f in listdir(WORKDIR) if isfile(join(WORKDIR, f))]
+    for f in onlyfiles:
+        pkg_name = get_package_name(f)
+        if pkg_name:
+            pkg_source = join(WORKDIR, f)
+            pkg_path = join(DESTDIR, pkg_name)
+            if not os.path.exists(pkg_path):
+                os.mkdir(pkg_path)
+                print(f'Created {pkg_path}')
+            os.system(f'mv -f {pkg_source} {pkg_path}')
+            print(f'Moved file {f} to {pkg_path}')
+            print('=' * 15)
+            count += 1
+    print(f'Done! {count} files sorted in {DESTDIR}')
+
+
+def main():
+    pre_check()
+    move_files()
+
+
+if __name__ == '__main__':
+    main()
