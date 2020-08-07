@@ -7,9 +7,9 @@ This script helps you organize python packages downloaded using:
 
 And sort all downloaded packages in their place to make an offline PyPi repository in an offline (air-gapped) network
 
-`Usage:  pypi_package_sorter.py source_dir  [destination_dir]
+`Usage:  pypi_package_sorter.py source_dir  [destination_dir]`
 
-eg. pypi_package_sorter.py /some/path/to/source/packages/ /destination/path/simple/`
+`eg. pypi_package_sorter.py /some/path/to/source/packages/ /destination/path/simple/`
 
 ---
 
